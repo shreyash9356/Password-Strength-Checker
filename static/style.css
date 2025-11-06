@@ -1,0 +1,353 @@
+:root {
+  --bg: #0a0e27;
+  --card: #1a1f3a;
+  --card-hover: #1f2542;
+  --text: #ffffff;
+  --accent: #00ffaa;
+  --accent-dark: #00cc88;
+  --danger: #ff5555;
+  --warning: #ffaa00;
+  --muted: #8b92b8;
+  --border: #2a2f4a;
+  --very-weak: #ff3333;
+  --weak: #ff6666;
+  --medium: #ffaa00;
+  --strong: #66ff66;
+  --very-strong: #00ffaa;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg) 0%, #0f1529 100%);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h1 {
+  text-align: center;
+  color: var(--accent);
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
+  font-weight: 700;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background: var(--card-hover);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.input-wrapper {
+  margin-bottom: 24px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 14px 50px 14px 16px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: rgba(10, 14, 39, 0.6);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+input[type="password"]:focus,
+input[type="text"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 255, 170, 0.1);
+  background: rgba(10, 14, 39, 0.8);
+}
+
+.toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.1);
+  color: var(--accent);
+}
+
+/* Strength Indicator */
+.strength-indicator {
+  margin: 24px 0;
+  display: none;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.strength-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.5s ease, background 0.3s ease;
+  border-radius: 10px;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.strength-fill.very-weak { background: var(--very-weak); }
+.strength-fill.weak { background: var(--weak); }
+.strength-fill.medium { background: var(--medium); }
+.strength-fill.strong { background: var(--strong); }
+.strength-fill.very-strong { background: var(--very-strong); }
+
+.strength-text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.strength-text.very-weak { color: var(--very-weak); }
+.strength-text.weak { color: var(--weak); }
+.strength-text.medium { color: var(--medium); }
+.strength-text.strong { color: var(--strong); }
+.strength-text.very-strong { color: var(--very-strong); }
+
+.strength-percentage {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Requirements Checklist */
+.requirements {
+  margin: 24px 0;
+  animation: fadeIn 0.4s ease 0.1s both;
+}
+
+.requirements h3 {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.checklist {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(10, 14, 39, 0.4);
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.requirement-item:hover {
+  background: rgba(10, 14, 39, 0.6);
+}
+
+.requirement-item.passed {
+  background: rgba(0, 255, 170, 0.1);
+  border: 1px solid rgba(0, 255, 170, 0.3);
+}
+
+.check-icon {
+  font-size: 1.2rem;
+  color: var(--danger);
+  font-weight: bold;
+  min-width: 20px;
+  transition: all 0.3s ease;
+}
+
+.check-icon.passed {
+  color: var(--accent);
+  transform: scale(1.2);
+}
+
+/* Feedback */
+.feedback {
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 10px;
+  display: none;
+  animation: slideDown 0.3s ease;
+}
+
+.feedback-item {
+  margin: 6px 0;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.9rem;
+}
+
+.feedback.very-weak,
+.feedback.weak {
+  background: rgba(255, 51, 51, 0.1);
+  border: 1px solid rgba(255, 51, 51, 0.3);
+  color: var(--very-weak);
+}
+
+.feedback.medium {
+  background: rgba(255, 170, 0, 0.1);
+  border: 1px solid rgba(255, 170, 0, 0.3);
+  color: var(--medium);
+}
+
+.feedback.strong,
+.feedback.very-strong {
+  background: rgba(0, 255, 170, 0.1);
+  border: 1px solid rgba(0, 255, 170, 0.3);
+  color: var(--accent);
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: center;
+}
+
+.btn {
+  appearance: none;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn.danger {
+  background: var(--danger);
+  color: #fff;
+  flex: 1;
+}
+
+.btn.danger:hover {
+  background: #ff3333;
+  box-shadow: 0 4px 12px rgba(255, 85, 85, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .container {
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .checklist {
+    gap: 8px;
+  }
+
+  .requirement-item {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

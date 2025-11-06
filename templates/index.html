@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Strength Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔒 Password Strength Checker</h1>
+
+      <div class="card">
+        <div class="input-wrapper">
+          <label for="password">Enter your password</label>
+          <div class="input-container">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Type your password here..."
+              autocomplete="new-password"
+            />
+            <button type="button" id="toggle-password" class="toggle-btn" aria-label="Toggle password visibility">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <!-- Strength Indicator -->
+        <div id="strength-indicator" class="strength-indicator">
+          <div class="strength-bar">
+            <div id="strength-fill" class="strength-fill"></div>
+          </div>
+          <div id="strength-text" class="strength-text"></div>
+          <div id="strength-percentage" class="strength-percentage"></div>
+        </div>
+
+        <!-- Requirements Checklist -->
+        <div id="requirements" class="requirements">
+          <h3>Password Requirements:</h3>
+          <ul class="checklist">
+            <li id="req-length" class="requirement-item">
+              <span class="check-icon">✗</span>
+              <span>At least 8 characters</span>
+            </li>
+            <li id="req-length-optimal" class="requirement-item">
+              <span class="check-icon">✗</span>
+              <span>12+ characters (optimal)</span>
+            </li>
+            <li id="req-upper" class="requirement-item">
+              <span class="check-icon">✗</span>
+              <span>Uppercase letter (A-Z)</span>
+            </li>
+            <li id="req-lower" class="requirement-item">
+              <span class="check-icon">✗</span>
+              <span>Lowercase letter (a-z)</span>
+            </li>
+            <li id="req-digit" class="requirement-item">
+              <span class="check-icon">✗</span>
+              <span>Number (0-9)</span>
+            </li>
+            <li id="req-special" class="requirement-item">
+              <span class="check-icon">✗</span>
+              <span>Special character (!@#$%...)</span>
+            </li>
+            <li id="req-common" class="requirement-item">
+              <span class="check-icon">✗</span>
+              <span>Not a common password</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Feedback Messages -->
+        <div id="feedback" class="feedback"></div>
+
+        <!-- Action Buttons -->
+        <div class="actions">
+          <button type="button" id="clear" class="btn danger">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const input = document.getElementById('password');
+      const toggleBtn = document.getElementById('toggle-password');
+      const clearBtn = document.getElementById('clear');
+      const strengthIndicator = document.getElementById('strength-indicator');
+      const strengthFill = document.getElementById('strength-fill');
+      const strengthText = document.getElementById('strength-text');
+      const strengthPercentage = document.getElementById('strength-percentage');
+      const feedback = document.getElementById('feedback');
+      const requirements = document.getElementById('requirements');
+
+      let debounceTimer;
+
+      // Toggle password visibility
+      toggleBtn.addEventListener('click', () => {
+        const type = input.type === 'password' ? 'text' : 'password';
+        input.type = type;
+        toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
+      });
+
+      // Real-time password checking with debounce
+      input.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          checkPassword(input.value);
+        }, 150);
+      });
+
+      // Check password strength
+      async function checkPassword(password) {
+        if (!password) {
+          resetDisplay();
+          return;
+        }
+
+        try {
+          const res = await fetch('/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+          });
+          const data = await res.json();
+          updateDisplay(data);
+        } catch (err) {
+          console.error('Error:', err);
+          feedback.textContent = 'Error checking password. Please try again.';
+          feedback.className = 'feedback error';
+        }
+      }
+
+      // Update UI with results
+      function updateDisplay(data) {
+        // Update strength indicator
+        strengthFill.style.width = `${data.percentage}%`;
+        strengthFill.className = `strength-fill ${data.strength_class}`;
+        strengthText.textContent = `Strength: ${data.strength}`;
+        strengthText.className = `strength-text ${data.strength_class}`;
+        strengthPercentage.textContent = `${data.percentage}%`;
+        strengthPercentage.className = `strength-percentage ${data.strength_class}`;
+        
+        // Show strength indicator
+        strengthIndicator.style.display = 'block';
+
+        // Update requirements checklist
+        updateRequirement('req-length', data.checks.length);
+        updateRequirement('req-length-optimal', data.checks.length_optimal);
+        updateRequirement('req-upper', data.checks.has_upper);
+        updateRequirement('req-lower', data.checks.has_lower);
+        updateRequirement('req-digit', data.checks.has_digit);
+        updateRequirement('req-special', data.checks.has_special);
+        updateRequirement('req-common', data.checks.not_common);
+
+        // Update feedback
+        if (data.feedback && data.feedback.length > 0) {
+          feedback.innerHTML = data.feedback.map(msg => 
+            `<div class="feedback-item">${msg}</div>`
+          ).join('');
+          feedback.className = `feedback ${data.strength_class}`;
+          feedback.style.display = 'block';
+        } else {
+          feedback.style.display = 'none';
+        }
+      }
+
+      // Update individual requirement item
+      function updateRequirement(id, passed) {
+        const item = document.getElementById(id);
+        const icon = item.querySelector('.check-icon');
+        if (passed) {
+          icon.textContent = '✓';
+          icon.className = 'check-icon passed';
+          item.classList.add('passed');
+        } else {
+          icon.textContent = '✗';
+          icon.className = 'check-icon';
+          item.classList.remove('passed');
+        }
+      }
+
+      // Reset display
+      function resetDisplay() {
+        strengthFill.style.width = '0%';
+        strengthText.textContent = '';
+        strengthPercentage.textContent = '';
+        strengthIndicator.style.display = 'none';
+        feedback.style.display = 'none';
+        
+        // Reset all requirements
+        document.querySelectorAll('.requirement-item').forEach(item => {
+          const icon = item.querySelector('.check-icon');
+          icon.textContent = '✗';
+          icon.className = 'check-icon';
+          item.classList.remove('passed');
+        });
+      }
+
+      // Clear button
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        input.type = 'password';
+        toggleBtn.textContent = '👁️';
+        resetDisplay();
+        input.focus();
+      });
+
+      // Initial focus
+      input.focus();
+    </script>
+  </body>
+</html>
